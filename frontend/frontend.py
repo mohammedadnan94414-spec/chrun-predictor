@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import datetime as dt
 import html as html_lib
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -35,8 +36,13 @@ st.set_page_config(
 # =============================================================================
 # 1. CONFIGURATION  (edit these if you need to)
 # =============================================================================
-DEFAULT_API_URL = "http://127.0.0.1:8000/predict"
-DEFAULT_TIMEOUT = 10
+# On Render, set an environment variable API_URL to your deployed backend, e.g.
+#   https://churn-api.onrender.com/predict
+# Locally it falls back to your own machine.
+DEFAULT_API_URL = os.environ.get("API_URL", "https://chrun-predictor.onrender.com/predict")
+DEFAULT_TIMEOUT = int(os.environ.get("API_TIMEOUT", "60"))
+# Set PERSIST_HISTORY=0 on a public deployment so visitors do not share a history file.
+PERSIST_HISTORY = os.environ.get("PERSIST_HISTORY", "1") == "1"
 HISTORY_FILE = Path(__file__).with_name("prediction_history.csv")
 
 PAGES = [
@@ -300,7 +306,7 @@ def stretch(fn, *args, **kwargs):
 # =============================================================================
 def load_history() -> list[dict]:
     """Load saved predictions from disk (so history survives a browser refresh)."""
-    if not HISTORY_FILE.exists():
+    if not PERSIST_HISTORY or not HISTORY_FILE.exists():
         return []
     try:
         df = pd.read_csv(HISTORY_FILE)
@@ -312,6 +318,8 @@ def load_history() -> list[dict]:
 
 
 def save_history(history: list[dict]) -> None:
+    if not PERSIST_HISTORY:
+        return
     try:
         pd.DataFrame(history, columns=HISTORY_COLUMNS).to_csv(HISTORY_FILE, index=False)
     except OSError:
@@ -403,7 +411,7 @@ def check_api(url: str) -> bool:
     base = url.rsplit("/predict", 1)[0].rstrip("/")
     for path in ("/health", "/docs", ""):
         try:
-            if requests.get(base + path, timeout=2).status_code < 500:
+            if requests.get(base + path, timeout=5).status_code < 500:
                 return True
         except requests.exceptions.RequestException:
             return False
