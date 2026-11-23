@@ -1,0 +1,5 @@
+Timestamp,ChurnProbability,Prediction,AccountWeeks,ContractRenewal,DataPlan,DataUsage,CustServCalls,DayMins,DayCalls,MonthlyCharge,OverageFee,RoamMins
+2026-11-23 14:11:10,6.5,0,150,1,1,2.5,1,180.0,90,55.0,3.0,8.0
+2026-11-23 14:11:27,60.0,1,40,0,0,0.0,5,300.0,110,95.0,30.0,18.0
+2026-11-23 14:12:11,51.0,1,100,0,1,0.0,4,250.5,100,80.0,25.0,15.0
+2026-11-23 14:12:27,56.0,1,100,1,0,0.0,4,250.5,100,80.0,25.0,15.0
