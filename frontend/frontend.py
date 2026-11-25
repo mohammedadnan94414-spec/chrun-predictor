@@ -584,20 +584,6 @@ def fig_hist(df: pd.DataFrame) -> go.Figure:
     return style_fig(fig, "Churn probability distribution")
 
 
-def fig_scatter(df: pd.DataFrame) -> go.Figure:
-    fig = px.scatter(df, x="DayMins", y="MonthlyCharge", color="Outcome",
-                     color_discrete_map=OUTCOME_COLORS, hover_data=["ChurnProbability"])
-    fig.update_traces(marker=dict(size=11, line=dict(color="#0b1020", width=1)))
-    return style_fig(fig, "Day minutes vs monthly charge")
-
-
-def fig_box(df: pd.DataFrame, feature: str) -> go.Figure:
-    fig = px.box(df, x="Outcome", y=feature, color="Outcome", points="all",
-                 color_discrete_map=OUTCOME_COLORS)
-    fig.update_layout(showlegend=False)
-    return style_fig(fig, f"{feature} by predicted outcome")
-
-
 # =============================================================================
 # 7. SIDEBAR
 # =============================================================================
@@ -836,13 +822,6 @@ def page_analytics() -> None:
     with c4:
         show_chart(fig_hist(df))
 
-    st.markdown('<div class="section-title">Customer usage insights</div>', unsafe_allow_html=True)
-    feature = st.selectbox("Feature to compare by predicted outcome", FEATURE_KEYS, index=5)
-    c5, c6 = st.columns(2, gap="medium")
-    with c5:
-        show_chart(fig_scatter(df))
-    with c6:
-        show_chart(fig_box(df, feature))
     st.caption(f"Based on {len(df)} prediction(s) made in this app. Small samples can be misleading.")
 
 
